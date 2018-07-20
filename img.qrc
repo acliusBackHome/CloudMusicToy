@@ -1,0 +1,10 @@
+<RCC>
+    <qresource prefix="/">
+        <file>img/pause.png</file>
+        <file>img/note_btn_next_white.png</file>
+        <file>img/note_btn_pre_white.png</file>
+        <file>img/note_btn_play_white.png</file>
+        <file>img/rdi_btn_love.png</file>
+        <file>img/video_icn_watermark_640.png</file>
+    </qresource>
+</RCC>

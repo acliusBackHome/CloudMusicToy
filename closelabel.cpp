@@ -20,12 +20,12 @@ CloseLabel::CloseLabel(QWidget *parent):QLabel(parent)
 }
 void CloseLabel::mouseReleaseEvent(QMouseEvent *event)
 {
-    qDebug("click");
+    qDebug("CloseLabel Mouse Release Event");
 }
 bool CloseLabel::event(QEvent *event)
 {
     if(event->type()==QEvent::MouseButtonRelease){
-        qDebug("label mouse release");
+        qDebug("CloseLabel Mouse Button Belease");
     }
     return QLabel::event(event);
 }

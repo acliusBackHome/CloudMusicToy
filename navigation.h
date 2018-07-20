@@ -10,7 +10,7 @@ class Navigation:public QObject {
     Q_OBJECT
 
 public:
-    MainWindow *root;
+    QWidget *root;
     QQuickWidget *main;
     QQuickWidget *player;
     QQuickItem *recommend;
@@ -20,7 +20,7 @@ public:
     void toList(QString id);
     void toList(QVariant var);
     void freshen();
-    explicit Navigation(MainWindow *p=0);
+    explicit Navigation(QWidget *p=0);
     ~Navigation();
 
 public slots:

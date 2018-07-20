@@ -4,10 +4,7 @@
 #
 #-------------------------------------------------
 
-QT  += core gui
-QT  += quickwidgets
-QT  += multimedia
-QT  +=
+QT  += core gui quickwidgets multimedia # av
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = wyytoy
@@ -27,35 +24,39 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     main.cpp \
-    mainwindow.cpp \
-    netapi.cpp \
-    netrecommend.cpp \
-    netsongdetails.cpp \
-    netplaylistdetails.cpp \
-    netlyrics.cpp \
-    netsongurl.cpp \
     mainplayer.cpp \
-    mylayout.cpp \
     closelabel.cpp \
-    navigation.cpp
+    navigation.cpp \
+    cloudmusic/netapi.cpp \
+    cloudmusic/netcomment.cpp \
+    cloudmusic/netlyrics.cpp \
+    cloudmusic/netplaylistdetails.cpp \
+    cloudmusic/netrecommend.cpp \
+    cloudmusic/netsongdetails.cpp \
+    cloudmusic/netsongurl.cpp \
+    cloudmusic.cpp
 
 HEADERS += \
-    mainwindow.h \
-    netrecommend.h \
-    netplaylistdetails.h \
-    netlyrics.h \
-    netsongdetails.h \
-    cloudmusicapi.h \
-    netsongurl.h \
     mainplayer.h \
-    mylayout.h \
     closelabel.h \
-    navigation.h
+    navigation.h \
+    cloudmusic/cloudmusicapi.h \
+    cloudmusic/netapi.h \
+    cloudmusic/netcomment.h \
+    cloudmusic/netlyrics.h \
+    cloudmusic/netplaylistdetails.h \
+    cloudmusic/netrecommend.h \
+    cloudmusic/netsongdetails.h \
+    cloudmusic/netsongurl.h \
+    cloudmusic.h
 
 FORMS += \
-    mainwindow.ui
+    cloudmusic.ui
 
 DISTFILES += \
     recommend.qml \
     list.qml \
     mediaplayer.qml
+
+RESOURCES += \
+    img.qrc

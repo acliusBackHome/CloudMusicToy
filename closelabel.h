@@ -9,7 +9,6 @@ public:
     bool event(QEvent *event);
     explicit CloseLabel(QWidget *parent = 0);
 protected:
-    void QMousePressEvent(QMouseEvent *event);
     void mouseReleaseEvent(QMouseEvent *);
 };
 

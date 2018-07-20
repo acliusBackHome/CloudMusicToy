@@ -1,18 +1,20 @@
 #include "navigation.h"
-#include "cloudmusicapi.h"
+#include "cloudmusic/cloudmusicapi.h"
 
-Navigation::Navigation(MainWindow *p){
+Navigation::Navigation(QWidget *p){
     root=p;
     main=0;
     player=new QQuickWidget(root);
     player->setSource(QUrl("../wyytoy/mediaplayer.qml"));
-    player->move(0,400);
+    player->move(10,670 + 10 - 47);
+    player->resize(1024,48);
     player->show();
     mainplayer=new MainPlayer(this,player);
 }
 
 Navigation::~Navigation(){
     if(main)delete main;
+    if(mainplayer)delete mainplayer;
 }
 
 void Navigation::freshen(){
@@ -20,6 +22,8 @@ void Navigation::freshen(){
         main->close();
     }
     main=new QQuickWidget(root);
+    main->move(210,60);
+    main->resize(1024-200,670-50-49);
     main->show();
     // recommend=0;
     // list=0;

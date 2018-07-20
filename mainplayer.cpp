@@ -1,5 +1,5 @@
 #include "mainplayer.h"
-#include "cloudmusicapi.h"
+#include "cloudmusic/cloudmusicapi.h"
 #include <QVariant>
 #include <QMetaObject>
 #include <QQuickItem>

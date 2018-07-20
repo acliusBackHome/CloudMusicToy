@@ -1,13 +1,11 @@
-#include "mainwindow.h"
-#include "netrecommend.h"
+#include "cloudmusic.h"
 #include <QApplication>
-#include <QMediaPlayer>
-#include <QUrl>
+#include <QWidget>
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    MainWindow w;
+    CloudMusic w;
     w.show();
     return a.exec();
 }
