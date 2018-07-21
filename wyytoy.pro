@@ -53,10 +53,5 @@ HEADERS += \
 FORMS += \
     cloudmusic.ui
 
-DISTFILES += \
-    recommend.qml \
-    list.qml \
-    mediaplayer.qml
-
 RESOURCES += \
     img.qrc

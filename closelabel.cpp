@@ -9,7 +9,6 @@ CloseLabel::CloseLabel(QWidget *parent):QLabel(parent)
     setStyleSheet("QLabel{"
                   "background:#c62f2f;"
                   "color:#fff;"
-                  "cursor:pointer;"
                   "color:#e29595;"
                   "font-size: 20px;"
                   "}"

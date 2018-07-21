@@ -47,10 +47,11 @@ Item {
         miusPlayer.play()
         console.log(pak.data[0].url)
         */
-        // miusPlayer.source = pak.data[0].url
+        miusPlayer.source = pak.data[0].url
+        console.log(miusPlayer.source)
         // miusPlayer.source = "http:///m10.music.126.net/20180720180240/668b5bf09f997f70680dc165112ec015/ymusic/422b/6fbe/0594/7dc903a50dfefa3eac717c9a7fc52e4e.mp3"
-        // miusPlayer.play()
-        player.play()
+        miusPlayer.play()
+        // player.play()
     }
     Rectangle {
         width: 1024

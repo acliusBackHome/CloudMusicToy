@@ -6,5 +6,8 @@
         <file>img/note_btn_play_white.png</file>
         <file>img/rdi_btn_love.png</file>
         <file>img/video_icn_watermark_640.png</file>
+        <file>qml/list.qml</file>
+        <file>qml/mediaplayer.qml</file>
+        <file>qml/recommend.qml</file>
     </qresource>
 </RCC>

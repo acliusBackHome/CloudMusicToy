@@ -5,7 +5,7 @@ Navigation::Navigation(QWidget *p){
     root=p;
     main=0;
     player=new QQuickWidget(root);
-    player->setSource(QUrl("../wyytoy/mediaplayer.qml"));
+    player->setSource(QUrl("qrc:/qml/mediaplayer.qml"));
     player->move(10,670 + 10 - 47);
     player->resize(1024,48);
     player->show();
@@ -31,7 +31,7 @@ void Navigation::freshen(){
 
 void Navigation::toRecommend(){
     this->freshen();
-    main->setSource(QUrl("../wyytoy/recommend.qml"));
+    main->setSource(QUrl("qrc:/qml/recommend.qml"));
     recommend=main->rootObject();
     QObject::connect(recommend,SIGNAL(playlistClickSignal(QVariant)),this,SLOT(playlistClickSlot(QVariant)));
     NetRecommend *k=new NetRecommend([&](QVariant res){
@@ -45,7 +45,7 @@ void Navigation::toRecommend(){
 void Navigation::toList(QString id){
     qDebug()<<id<<endl;
     this->freshen();
-    main->setSource(QUrl("../wyytoy/list.qml"));
+    main->setSource(QUrl("qrc:/qml/list.qml"));
     list=main->rootObject();
     QObject::connect(list,SIGNAL(songClickSignal(QVariant)),this,SLOT(songClickSlot(QVariant)));
     NetPlaylistDetails *k=new NetPlaylistDetails(id,[&](QVariant res){
