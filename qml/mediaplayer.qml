@@ -1,6 +1,7 @@
 import QtQuick 2.0
 import QtMultimedia 5.9
 import QtQuick.Controls 2.2
+import "./"
 // import QtAV 1.6
 Item {
     width: 1024
@@ -8,6 +9,11 @@ Item {
     property bool isStart: false
     property real nowReal: 0
     property real endReal: 258000
+    property real listnum: 0
+    signal listBtnClickSignal
+    function setListNum (num) {
+        listnum = num
+    }
     function getTimeStr (num) {
         num /= 1000
         num = ~~num
@@ -48,9 +54,10 @@ Item {
         console.log(pak.data[0].url)
         */
         miusPlayer.source = pak.data[0].url
-        console.log(miusPlayer.source)
-        // miusPlayer.source = "http:///m10.music.126.net/20180720180240/668b5bf09f997f70680dc165112ec015/ymusic/422b/6fbe/0594/7dc903a50dfefa3eac717c9a7fc52e4e.mp3"
+        // console.log(miusPlayer.source)
+        // miusPlayer.source = "http://localhost:8000/mp3.mp3"
         miusPlayer.play()
+        console.log(miusPlayer.source)
         // player.play()
     }
     Rectangle {
@@ -121,6 +128,7 @@ Item {
             x: 200
             y: (48 - 14) / 2
             text: getTimeStr(nowReal)
+            font.family: "Arial, Helvetica, sans-serif"
         }
         Text {
             color: "#000"
@@ -130,6 +138,7 @@ Item {
             x: 700
             y: (48 - 14) / 2
             text: getTimeStr(endReal)
+            font.family: "Arial, Helvetica, sans-serif"
         }
         Slider {
             id: miusSlider
@@ -249,6 +258,26 @@ Item {
                             // change volume
                         }
                     }
+                }
+            }
+        }
+        Rectangle {
+            x: parent.width - width - 14
+            y: (parent.height - height) / 2
+            width: 100
+            height: 18
+            color: "#e1e1e2"
+            radius: 4
+            Text {
+                anchors.centerIn: parent
+                text: "list: " + listnum
+                font.family: "Arial, Helvetica, sans-serif"
+            }
+            MouseArea {
+                anchors.fill: parent
+                cursorShape: Qt.PointingHandCursor
+                onClicked: function () {
+                    listBtnClickSignal()
                 }
             }
         }

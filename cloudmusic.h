@@ -31,6 +31,7 @@ signals:
 public slots:
 private slots:
     void on_min_clicked();
+    void on_back_clicked();
 };
 
 #endif // CLOUDMUSIC_H

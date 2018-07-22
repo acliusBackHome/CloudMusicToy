@@ -6,6 +6,7 @@ Item {
     height: 670 - 50 - 48
     id: listdetail
     signal songClickSignal(var sid)
+    signal listClickSignal(var lid)
     property string bPicUrl: ""
     property string bTitleStr: ""
     property string creatorImgUrl: ""
@@ -13,6 +14,8 @@ Item {
     property string createDateStr: ""
     property string tagsStr: ""
     property string summaryStr: ""
+    property string listId: ""
+    property var listIds: new Array
     Component {
             id: topheader
             Rectangle {
@@ -123,6 +126,7 @@ Item {
                                MouseArea {
                                    anchors.fill: parent
                                    cursorShape: Qt.PointingHandCursor
+                                   onClicked: listdetail.listClickSignal(listIds)
                                }
                             }
                         }
@@ -391,12 +395,14 @@ Item {
         creatorImgUrl = res.playlist.creator.avatarUrl
         createDateStr = (new Date(res.playlist.createTime)).toLocaleString() + "创建"
         userNameStr = res.playlist.creator.nickname
+        listId = res.playlist.id
         var str = ""
         var tags = res.playlist.tags
         str = tags.join(" / ")
         tagsStr = "标签: " + str
         summaryStr = "简介: " + res.playlist.description
         var list = res.playlist.tracks
+        listIds = []
         for (var i in list) {
             var a = list[i]
             listdata.append({
@@ -405,8 +411,9 @@ Item {
                                 singer: a.ar[0].name,
                                 playlist: a.al.name,
                                 time: ~~(a.dt / 1000 / 60) + ":" + ~~(a.dt / 1000) % 60,
-                                mid: a.id
+                                mid: a.id.toString()
                             })
+            listIds.push(a.id.toString())
         }
         // ali.height = 28 * list.length
     }

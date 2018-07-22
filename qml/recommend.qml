@@ -85,7 +85,7 @@ Rectangle {
                         width: 139
                         height: 30
                         text: content
-                        font.family: "宋体"
+                        font.family: "Arial, Helvetica, sans-serif"
                         font.pixelSize: 14
                         font.weight: Font.Light
                         wrapMode: Text.WordWrap

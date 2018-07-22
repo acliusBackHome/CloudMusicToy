@@ -56,3 +56,8 @@ void CloudMusic::mouseMoveEvent(QMouseEvent *event){
         this->move(event->globalPos()-offset);
     }
 }
+
+void CloudMusic::on_back_clicked()
+{
+    navigation->toRecommend();
+}

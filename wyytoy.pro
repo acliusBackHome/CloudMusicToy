@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT  += core gui quickwidgets multimedia # av
+QT  += core gui quickwidgets multimedia sql # av
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = wyytoy
@@ -34,7 +34,8 @@ SOURCES += \
     cloudmusic/netrecommend.cpp \
     cloudmusic/netsongdetails.cpp \
     cloudmusic/netsongurl.cpp \
-    cloudmusic.cpp
+    cloudmusic.cpp \
+    sqlite/litestorage.cpp
 
 HEADERS += \
     mainplayer.h \
@@ -48,7 +49,8 @@ HEADERS += \
     cloudmusic/netrecommend.h \
     cloudmusic/netsongdetails.h \
     cloudmusic/netsongurl.h \
-    cloudmusic.h
+    cloudmusic.h \
+    sqlite/litestorage.h
 
 FORMS += \
     cloudmusic.ui

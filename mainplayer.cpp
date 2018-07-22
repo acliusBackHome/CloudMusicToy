@@ -10,6 +10,7 @@ MainPlayer::MainPlayer(QObject *parent,QQuickWidget *p) : QObject(parent)
 }
 void MainPlayer::addToList(QString id){
     playlist.push_back(id);
+    QMetaObject::invokeMethod((QQuickItem *)(player->rootObject()),"setListNum",Qt::DirectConnection,Q_ARG(QVariant,QVariant(playlist.size())));
 }
 void MainPlayer::newPlay(QString id){
     addToList(id);

@@ -9,5 +9,7 @@
         <file>qml/list.qml</file>
         <file>qml/mediaplayer.qml</file>
         <file>qml/recommend.qml</file>
+        <file>qml/Poplist.qml</file>
+        <file>qml/smallbox.qml</file>
     </qresource>
 </RCC>

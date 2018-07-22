@@ -194,6 +194,30 @@
      <string/>
     </property>
    </widget>
+   <widget class="QPushButton" name="back">
+    <property name="geometry">
+     <rect>
+      <x>200</x>
+      <y>15</y>
+      <width>30</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">#back{
+	background: rgba(0,0,0,0);
+	color: #fff;
+	border: 1px solid #a82828;
+	radius: 4;
+}</string>
+    </property>
+    <property name="text">
+     <string>&lt;</string>
+    </property>
+   </widget>
   </widget>
  </widget>
  <resources/>
