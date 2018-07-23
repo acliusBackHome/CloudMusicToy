@@ -112,7 +112,7 @@ void Navigation::songClickSlot(QVariant id){
     mainplayer->newPlay(id.toString());
     updateRB();
     NetSongDetails *k=new NetSongDetails(id.toString(),[&](QVariant res){
-        qDebug()<<res<<endl;
+        // qDebug()<<res<<endl;
         QMetaObject::invokeMethod(smBox->rootObject(),"freshen",Qt::DirectConnection,Q_ARG(QVariant,res));
     });
 

@@ -1,5 +1,5 @@
 import QtQuick 2.0
-import QtMultimedia 5.9
+import QtMultimedia 5.8
 import QtQuick.Controls 2.2
 import "./"
 // import QtAV 1.6
@@ -44,7 +44,7 @@ Item {
             }
         }
         onError: function (e, estr) {
-            console.log(e)
+            console.log(e,estr)
         }
     }
     function newPlay (pak) {
@@ -54,10 +54,10 @@ Item {
         console.log(pak.data[0].url)
         */
         miusPlayer.source = pak.data[0].url
+        miusPlayer.play()
         // console.log(miusPlayer.source)
         // miusPlayer.source = "http://localhost:8000/mp3.mp3"
-        miusPlayer.play()
-        console.log(miusPlayer.source)
+        // miusPlayer.source = "http://m10.music.126.net/20180722220643/f9addda12dd69b88163e1c7b05d3dbb0/ymusic/1ab0/62cb/79b1/6fbada3d9b283c524ebeca912c82dbeb.mp3"
         // player.play()
     }
     Rectangle {
@@ -100,6 +100,7 @@ Item {
                 onClicked: function () {
                     // signal
                     isStart = true
+                    miusPlayer.play()
                 }
             }
         }

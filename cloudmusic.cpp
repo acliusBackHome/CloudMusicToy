@@ -12,13 +12,12 @@ CloudMusic::CloudMusic(QWidget *parent) :
     this->setAttribute(Qt::WA_TranslucentBackground);
     this->resize(QSize(1024 + 20,670 + 30));
 
-    auto shadowEffect = new QGraphicsDropShadowEffect(this);
+    auto shadowEffect=new QGraphicsDropShadowEffect(this);
     shadowEffect->setBlurRadius(12);
     shadowEffect->setOffset(0,0);
     ui->frame->setGraphicsEffect(shadowEffect);
 
     closeLabel=new CloseLabel(this);
-
     closeLabel->installEventFilter(this);
 
     navigation=new Navigation(this);
@@ -46,11 +45,13 @@ void CloudMusic::on_min_clicked()
 {
     this->showMinimized();
 }
+
 void CloudMusic::mousePressEvent(QMouseEvent *event){
     if(event->button()==Qt::LeftButton){
         offset=event->globalPos()-pos();
     }
 }
+
 void CloudMusic::mouseMoveEvent(QMouseEvent *event){
     if(event->buttons()&Qt::LeftButton){
         this->move(event->globalPos()-offset);
