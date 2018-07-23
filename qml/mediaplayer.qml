@@ -35,6 +35,10 @@ Item {
     MediaPlayer {
         id: miusPlayer
         source: ""
+        playlist : Playlist {
+            id: playlistr
+        }
+
         onSourceChanged: function () {
             miusSlider.value = 0
         }
@@ -73,6 +77,7 @@ Item {
             MouseArea {
                 anchors.fill: parent
                 cursorShape: Qt.PointingHandCursor
+                onClicked: miusPlayer.playlist.previous()
             }
         }
         Image {
@@ -84,6 +89,7 @@ Item {
             MouseArea {
                 anchors.fill: parent
                 cursorShape: Qt.PointingHandCursor
+                onClicked: miusPlayer.playlist.next()
             }
         }
         Image {
@@ -118,6 +124,7 @@ Item {
                 onClicked: function () {
                     // signal
                     isStart = false
+                    miusPlayer.pause()
                 }
             }
         }
