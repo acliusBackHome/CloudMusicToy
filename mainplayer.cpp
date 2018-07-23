@@ -22,3 +22,31 @@ void MainPlayer::newPlay(QString id){
         // 泄露
     });
 }
+void MainPlayer::toBack(){
+    if(playlist.empty())return;
+    index=playlist.length()-1;
+}
+QString MainPlayer::nextStr(){
+    if(playlist.empty())return "nonenone";
+    index--;
+    if(index<0)toBack();
+    return playlist[index];
+}
+QString MainPlayer::prevStr(){
+    if(playlist.empty())return "nonenone";
+    index++;
+    if(index>=playlist.length())index=0;
+    return playlist[index];
+}
+QString MainPlayer::nowsStr(){
+    if(playlist.empty())return "nonenone";
+    return playlist[index];
+}
+void MainPlayer::next(){
+    QString sid=nextStr();
+    if(sid!="nonenone")newPlay(sid);
+}
+void MainPlayer::prev(){
+    QString sid=prevStr();
+    if(sid!="nonenone")newPlay(sid);
+}

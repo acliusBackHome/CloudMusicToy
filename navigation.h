@@ -23,12 +23,13 @@ public:
     LiteStorage *rarium;
 
     void toRecommend();
-    void toList(QString id);
-    void toList(QVariant var);
+    void toList(QString);
+    void toList(QVariant);
     void openPopList();
     void closePopList();
     void freshen();
     void updateRB();
+    void updateLB(QString);
     explicit Navigation(QWidget *p=0);
     ~Navigation();
 
@@ -37,6 +38,8 @@ public slots:
     void songClickSlot(QVariant); // song in playlist click
     void listClickSlot(QVariant); // play all list button click
     void listBtnClickSlot(); // show or close playing list button click
+    void prevBtnClickSlot();
+    void nextBtnClickSlot();
     void clearListSlot(); // clear btn click
 
 };

@@ -1,5 +1,5 @@
 import QtQuick 2.0
-import QtMultimedia 5.8
+import QtMultimedia 5.9
 import QtQuick.Controls 2.2
 import "./"
 // import QtAV 1.6
@@ -11,6 +11,8 @@ Item {
     property real endReal: 258000
     property real listnum: 0
     signal listBtnClickSignal
+    signal prevBtnClickSignal
+    signal nextBtnClickSignal
     function setListNum (num) {
         listnum = num
     }
@@ -23,46 +25,34 @@ Item {
         if (b < 10) b = "0" + b
         return a + ":" + b
     }
-    /*
-    VideoOutput2 {
-        source: player
-    }
-    AVPlayer {
-        id: player
-        source: "http://m10.music.126.net/20180720180240/668b5bf09f997f70680dc165112ec015/ymusic/422b/6fbe/0594/7dc903a50dfefa3eac717c9a7fc52e4e.mp3"
-    }
-    */
     MediaPlayer {
         id: miusPlayer
         source: ""
-        playlist : Playlist {
-            id: playlistr
-        }
 
         onSourceChanged: function () {
             miusSlider.value = 0
+            nowReal = 0
         }
+        onDurationChanged: function () {
+            endReal = duration
+        }
+
         onPositionChanged: function () {
             if (!miusSlider.isPressed) {
-                miusSlider.value = position / 1000
+                miusSlider.value = position / duration
+                nowReal = position
             }
+            if (isStart && position == duration) nextBtnClickSignal()
+            // console.log(position,duration)
         }
         onError: function (e, estr) {
-            console.log(e,estr)
+            console.log(e)
         }
     }
     function newPlay (pak) {
-        /*
         miusPlayer.source = pak.data[0].url
         miusPlayer.play()
-        console.log(pak.data[0].url)
-        */
-        miusPlayer.source = pak.data[0].url
-        miusPlayer.play()
-        // console.log(miusPlayer.source)
-        // miusPlayer.source = "http://localhost:8000/mp3.mp3"
-        // miusPlayer.source = "http://m10.music.126.net/20180722220643/f9addda12dd69b88163e1c7b05d3dbb0/ymusic/1ab0/62cb/79b1/6fbada3d9b283c524ebeca912c82dbeb.mp3"
-        // player.play()
+        isStart = true
     }
     Rectangle {
         width: 1024
@@ -77,7 +67,7 @@ Item {
             MouseArea {
                 anchors.fill: parent
                 cursorShape: Qt.PointingHandCursor
-                onClicked: miusPlayer.playlist.previous()
+                onClicked: prevBtnClickSignal()
             }
         }
         Image {
@@ -89,7 +79,7 @@ Item {
             MouseArea {
                 anchors.fill: parent
                 cursorShape: Qt.PointingHandCursor
-                onClicked: miusPlayer.playlist.next()
+                onClicked: nextBtnClickSignal()
             }
         }
         Image {
@@ -105,6 +95,10 @@ Item {
                 cursorShape: Qt.PointingHandCursor
                 onClicked: function () {
                     // signal
+                    if (miusPlayer.source == "") {
+                        console.log("none of song")
+                        return
+                    }
                     isStart = true
                     miusPlayer.play()
                 }
@@ -201,8 +195,9 @@ Item {
                     onPositionChanged: function () {
                         if (pressed) {
                             miusSlider.value += (mouseX - miusSlider.ox) / miusSlider.width * (miusSlider.to - miusSlider.from)
-                            nowReal = miusSlider.value / (miusSlider.to - miusSlider.from) * endReal
                         }
+                        console.log(nowReal)
+                        nowReal = miusSlider.value / (miusSlider.to - miusSlider.from) * endReal
                     }
 
                 }
@@ -216,6 +211,12 @@ Item {
             height: 48
             x: 770
             y: 0
+            value: .5
+            onValueChanged: function () {
+                console.log(value)
+                miusPlayer.volume = value
+            }
+
             background: Rectangle {
                 width: 100
                 height: 4
@@ -260,10 +261,9 @@ Item {
                     }
                     onEntered: vhand.width = vhand.height = 14
                     onExited: vhand.width = vhand.height = 10
-                    onPositionChanged: function () {
+                    onPositionChanged: function (p) {
                         if (pressed) {
                             volumeSlider.value += (mouseX - volumeSlider.ox) / miusSlider.width * (volumeSlider.to - volumeSlider.from)
-                            // change volume
                         }
                     }
                 }

@@ -16,6 +16,8 @@ Navigation::Navigation(QWidget *p){
     player->show();
     mainplayer=new MainPlayer(this,player);
     QObject::connect((QQuickItem *)(player->rootObject()),SIGNAL(listBtnClickSignal()),this,SLOT(listBtnClickSlot()));
+    QObject::connect((QQuickItem *)(player->rootObject()),SIGNAL(prevBtnClickSignal()),this,SLOT(prevBtnClickSlot()));
+    QObject::connect((QQuickItem *)(player->rootObject()),SIGNAL(nextBtnClickSignal()),this,SLOT(nextBtnClickSlot()));
 
     smBox=new QQuickWidget(root);
     smBox->setSource(QUrl("qrc:/qml/smallbox.qml"));
@@ -101,6 +103,14 @@ void Navigation::toList(QString id){
 void Navigation::updateRB(){
     QMetaObject::invokeMethod(player->rootObject(),"setListNum",Qt::DirectConnection,Q_ARG(QVariant,QVariant(mainplayer->playlist.length())));
 }
+
+void Navigation::updateLB(QString id){
+    if(id=="nonenone")return;
+    NetSongDetails *k=new NetSongDetails(id,[&](QVariant res){
+        qDebug()<<res<<endl;
+        QMetaObject::invokeMethod(smBox->rootObject(),"freshen",Qt::DirectConnection,Q_ARG(QVariant,res));
+    });
+}
 void Navigation::playlistClickSlot(QVariant id){
     qDebug()<<id<<endl;
     this->toList(id.toString());
@@ -110,12 +120,9 @@ void Navigation::songClickSlot(QVariant id){
     qDebug()<<id<<endl;
     rarium->addSid(id.toString());
     mainplayer->newPlay(id.toString());
+    mainplayer->toBack(); // 最后的item是最新添加的
     updateRB();
-    NetSongDetails *k=new NetSongDetails(id.toString(),[&](QVariant res){
-        // qDebug()<<res<<endl;
-        QMetaObject::invokeMethod(smBox->rootObject(),"freshen",Qt::DirectConnection,Q_ARG(QVariant,res));
-    });
-
+    updateLB(id.toString());
 }
 
 void Navigation::listClickSlot(QVariant listIds){
@@ -141,6 +148,15 @@ void Navigation::listBtnClickSlot(){
     listBtnState=!listBtnState;
 }
 
+void Navigation::prevBtnClickSlot(){
+    mainplayer->prev();
+    updateLB(mainplayer->nowsStr());
+}
+
+void Navigation::nextBtnClickSlot(){
+    mainplayer->next();
+    updateLB(mainplayer->nowsStr());
+}
 void Navigation::clearListSlot() {
     rarium->clearSids();
     QMetaObject::invokeMethod(poplist->rootObject(),"clear",Qt::DirectConnection);
