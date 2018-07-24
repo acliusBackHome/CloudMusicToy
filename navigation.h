@@ -33,6 +33,18 @@ public:
     explicit Navigation(QWidget *p=0);
     ~Navigation();
 
+protected:
+    void cntPlaylistSwitch();
+    void cntPlayerNowIdStr();
+    void cntRecommendAlbum();
+    void cntPopupClearList();
+    void cntPopupSongClick();
+    void cntAlbumSongClick();
+    void cntAlbumAllToPlay();
+    void callPopAPlayClear();
+    void callRmdCreateList(QVariant);
+    void callPopCreateList(QVariant);
+    void callDtlCreateList(QVariant);
 public slots:
     void playlistClickSlot(QVariant); // playlist icon click
     void songClickSlot(QVariant); // song in playlist click

@@ -4,7 +4,49 @@
 #include "sqlite/litestorage.h"
 #include <QJsonArray>
 #include <QGraphicsDropShadowEffect>
-
+void Navigation::cntRecommendAlbum(){
+    QObject::connect(recommend,SIGNAL(playlistClickSignal(QVariant)),this,SLOT(playlistClickSlot(QVariant)));
+}
+void Navigation::cntPlayerNowIdStr(){
+    QObject::connect((QQuickItem *)(player->rootObject()),SIGNAL(nowIdSignal(QVariant)),this,SLOT(nowIdSlot(QVariant)));
+}
+void Navigation::cntPlaylistSwitch(){
+    QObject::connect((QQuickItem *)(player->rootObject()),SIGNAL(listBtnClickSignal()),this,SLOT(playlistSwitchClickSlot()));
+}
+void Navigation::cntPopupClearList(){
+    QObject::connect(poplist->rootObject(),SIGNAL(clearListSignal()),this,SLOT(clearListSlot()));
+}
+void Navigation::cntPopupSongClick(){
+    QObject::connect(poplist->rootObject(),SIGNAL(pieceClickSignal(QVariant)),this,SLOT(songClickSlot(QVariant)));
+}
+void Navigation::cntAlbumSongClick(){
+    QObject::connect(list,SIGNAL(songClickSignal(QVariant)),this,SLOT(songClickSlot(QVariant)));
+}
+void Navigation::cntAlbumAllToPlay(){
+    QObject::connect(list,SIGNAL(listClickSignal(QVariant)),this,SLOT(listClickSlot(QVariant)));
+}
+void Navigation::callPopAPlayClear(){
+    QMetaObject::invokeMethod(poplist->rootObject(),"clear",Qt::DirectConnection);
+    QMetaObject::invokeMethod(player->rootObject(),"clear",Qt::DirectConnection);
+}
+void Navigation::callRmdCreateList(QVariant arg){
+    QMetaObject::invokeMethod(recommend,"createItems",Qt::DirectConnection,Q_ARG(QVariant,arg));
+}
+void Navigation::callPopCreateList(QVariant arg){
+    QMetaObject::invokeMethod(poplist->rootObject(),"createList",Qt::DirectConnection,Q_ARG(QVariant,arg)); // auto downcast
+}
+void Navigation::callDtlCreateList(QVariant arg){
+    QMetaObject::invokeMethod(list,"nextTick",Qt::DirectConnection,Q_ARG(QVariant,arg));
+}
+void Navigation::updateRB(){
+    QMetaObject::invokeMethod(player->rootObject(),"setListNum",Qt::DirectConnection,Q_ARG(QVariant,QVariant(mainplayer->playlist.length())));
+}
+void Navigation::updateLB(QString id){
+    if(id=="nonenone")return;
+    NetSongDetails *k=new NetSongDetails(id,[&](QVariant res){
+        QMetaObject::invokeMethod(smBox->rootObject(),"freshen",Qt::DirectConnection,Q_ARG(QVariant,res));
+    });
+}
 Navigation::Navigation(QWidget *p){
     root=p;
     main=0;
@@ -17,8 +59,8 @@ Navigation::Navigation(QWidget *p){
     player->resize(1024,48);
     player->show();
     mainplayer=new MainPlayer(this,player);
-    QObject::connect((QQuickItem *)(player->rootObject()),SIGNAL(listBtnClickSignal()),this,SLOT(playlistSwitchClickSlot()));
-    QObject::connect((QQuickItem *)(player->rootObject()),SIGNAL(nowIdSignal(QVariant)),this,SLOT(nowIdSlot(QVariant)));
+    cntPlaylistSwitch();
+    cntPlayerNowIdStr();
 
     smBox=new QQuickWidget(root);
     smBox->setSource(QUrl("qrc:/qml/smallbox.qml"));
@@ -59,12 +101,11 @@ void Navigation::toRecommend(){
     this->freshen();
     main->setSource(QUrl("qrc:/qml/recommend.qml"));
     recommend=main->rootObject();
-    QObject::connect(recommend,SIGNAL(playlistClickSignal(QVariant)),this,SLOT(playlistClickSlot(QVariant)));
+    cntRecommendAlbum();
     NetRecommend *k=new NetRecommend([&](QVariant res){
         qDebug()<<"这是魔法的输出"<<endl;
-        QVariant retValue;
-        QMetaObject::invokeMethod(recommend,"createItems",Qt::DirectConnection,Q_RETURN_ARG(QVariant, retValue),Q_ARG(QVariant,res));
-        delete k;
+        callRmdCreateList(res);
+        // 泄露
     });
 }
 
@@ -75,9 +116,9 @@ void Navigation::openPopList(){
     poplist->move(1024-580+10,670-477-48+10);
     poplist->show();
 
-    QMetaObject::invokeMethod(poplist->rootObject(),"createList",Qt::DirectConnection,Q_ARG(QVariant,rarium->getList())); // auto downcast
-    QObject::connect(poplist->rootObject(),SIGNAL(pieceClickSignal(QVariant)),this,SLOT(songClickSlot(QVariant)));
-    QObject::connect(poplist->rootObject(),SIGNAL(clearListSignal()),this,SLOT(clearListSlot()));
+    callPopCreateList(rarium->getList());
+    cntPopupSongClick();
+    cntPopupClearList();
 }
 
 void Navigation::closePopList(){
@@ -91,26 +132,15 @@ void Navigation::toList(QString id){
     this->freshen();
     main->setSource(QUrl("qrc:/qml/list.qml"));
     list=main->rootObject();
-    QObject::connect(list,SIGNAL(songClickSignal(QVariant)),this,SLOT(songClickSlot(QVariant)));
-    QObject::connect(list,SIGNAL(listClickSignal(QVariant)),this,SLOT(listClickSlot(QVariant)));
+    cntAlbumSongClick();
+    cntAlbumAllToPlay();
     NetPlaylistDetails *k=new NetPlaylistDetails(id,[&](QVariant res){
-        QVariant retValue;
         rarium->addDetails(res.toJsonObject()["playlist"].toVariant().toJsonObject()["tracks"].toVariant().toJsonArray());
-        QMetaObject::invokeMethod(list,"nextTick",Qt::DirectConnection,Q_RETURN_ARG(QVariant,retValue),Q_ARG(QVariant,res));
+        callDtlCreateList(res);
         // 泄露
     });
 }
 
-void Navigation::updateRB(){
-    QMetaObject::invokeMethod(player->rootObject(),"setListNum",Qt::DirectConnection,Q_ARG(QVariant,QVariant(mainplayer->playlist.length())));
-}
-
-void Navigation::updateLB(QString id){
-    if(id=="nonenone")return;
-    NetSongDetails *k=new NetSongDetails(id,[&](QVariant res){
-        QMetaObject::invokeMethod(smBox->rootObject(),"freshen",Qt::DirectConnection,Q_ARG(QVariant,res));
-    });
-}
 void Navigation::playlistClickSlot(QVariant id){
     this->toList(id.toString());
 }
@@ -120,8 +150,7 @@ void Navigation::songClickSlot(QVariant id){
     mainplayer->newPlay(id.toString());
     updateRB();
     updateLB(id.toString());
-    if(poplist)QMetaObject::invokeMethod(poplist->rootObject(),"createList",Qt::DirectConnection,Q_ARG(QVariant,rarium->getList())); // auto downcast
-
+    if(poplist)callPopCreateList(rarium->getList());
 }
 
 void Navigation::listClickSlot(QVariant listIds){
@@ -146,13 +175,11 @@ void Navigation::playlistSwitchClickSlot(){
 
 void Navigation::clearListSlot() {
     rarium->clearSids();
-    QMetaObject::invokeMethod(poplist->rootObject(),"clear",Qt::DirectConnection);
-    QMetaObject::invokeMethod(player->rootObject(),"clear",Qt::DirectConnection);
+    callPopAPlayClear();
     mainplayer->playlist.clear();
     updateRB();
 }
 void Navigation::nowIdSlot(QVariant sid){
-    qDebug()<<sid.toString()<<endl;
     QRegExp rx("id=\\d+(?=.mp3)");
     qDebug()<<sid.toString().indexOf(rx);
     QString quid=rx.capturedTexts()[0];
