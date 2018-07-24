@@ -136,9 +136,8 @@ Rectangle {
     function createList (raw) {
         listNums = raw.length
         listData.clear()
-        for (var i = raw.length - 1; i >= 0; i--) {
+        for (var i = 0; i < listNums; i++) {
             var n = raw[i]
-            console.log(n)
             listData.append({
                                 num: i + 1,
                                 sid: n[0],

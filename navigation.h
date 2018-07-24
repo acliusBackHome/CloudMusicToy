@@ -37,10 +37,9 @@ public slots:
     void playlistClickSlot(QVariant); // playlist icon click
     void songClickSlot(QVariant); // song in playlist click
     void listClickSlot(QVariant); // play all list button click
-    void listBtnClickSlot(); // show or close playing list button click
-    void prevBtnClickSlot();
-    void nextBtnClickSlot();
+    void playlistSwitchClickSlot(); // show or close playing list button click
     void clearListSlot(); // clear btn click
+    void nowIdSlot(QVariant); // play new music
 
 };
 

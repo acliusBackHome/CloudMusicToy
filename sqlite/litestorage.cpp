@@ -79,7 +79,6 @@ QVariantList LiteStorage::getList(){
         }
         ret<<a;
     }
-    qDebug()<<ret<<endl;
     return ret;
 }
 QVector<QString> LiteStorage::getListIds(){

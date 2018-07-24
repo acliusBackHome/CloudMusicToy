@@ -10,9 +10,10 @@ Item {
     property real nowReal: 0
     property real endReal: 258000
     property real listnum: 0
+    property string baseUrl: "http://music.163.com/song/media/outer/url?id="
+    property string tailUrl: ".mp3"
     signal listBtnClickSignal
-    signal prevBtnClickSignal
-    signal nextBtnClickSignal
+    signal nowIdSignal(var sid)
     function setListNum (num) {
         listnum = num
     }
@@ -25,14 +26,32 @@ Item {
         if (b < 10) b = "0" + b
         return a + ":" + b
     }
+    function freshList (lists) {
+        console.log(lists)
+        for (var i = 0; i < lists.length; i++){
+            miusList.addItem(baseUrl + lists[i] + tailUrl)
+        }
+        console.log(miusList.items)
+    }
+    function addItem (id) {
+        console.log(id)
+        miusList.addItem(baseUrl + id + tailUrl)
+    }
+    function clear () {
+        miusList.clear()
+    }
+
     MediaPlayer {
         id: miusPlayer
         source: ""
-
-        onSourceChanged: function () {
-            miusSlider.value = 0
-            nowReal = 0
+        playlist: Playlist {
+            id: miusList
+            playbackMode: Playlist.Loop
         }
+        onSourceChanged: function () {
+            console.log("change")
+        }
+
         onDurationChanged: function () {
             endReal = duration
         }
@@ -42,15 +61,22 @@ Item {
                 miusSlider.value = position / duration
                 nowReal = position
             }
-            if (isStart && position == duration) nextBtnClickSignal()
+            if (isStart && position == duration) {
+                miusList.next()
+                nowReal = 0
+                nowIdSignal(miusList.currentItemSource)
+            }
             // console.log(position,duration)
         }
         onError: function (e, estr) {
             console.log(e)
         }
     }
-    function newPlay (pak) {
-        miusPlayer.source = pak.data[0].url
+    function newPlay (sid) {
+        sid = sid.toString()
+        const url = baseUrl + sid + tailUrl
+        console.log(url)
+        miusList.addItem(url)
         miusPlayer.play()
         isStart = true
     }
@@ -67,7 +93,10 @@ Item {
             MouseArea {
                 anchors.fill: parent
                 cursorShape: Qt.PointingHandCursor
-                onClicked: prevBtnClickSignal()
+                onClicked: function () {
+                    miusList.previous()
+                    nowIdSignal(miusList.currentItemSource)
+                }
             }
         }
         Image {
@@ -79,7 +108,10 @@ Item {
             MouseArea {
                 anchors.fill: parent
                 cursorShape: Qt.PointingHandCursor
-                onClicked: nextBtnClickSignal()
+                onClicked: function () {
+                    miusList.next()
+                    nowIdSignal(miusList.currentItemSource)
+                }
             }
         }
         Image {
@@ -95,7 +127,7 @@ Item {
                 cursorShape: Qt.PointingHandCursor
                 onClicked: function () {
                     // signal
-                    if (miusPlayer.source == "") {
+                    if (miusList.itemCount == 0) {
                         console.log("none of song")
                         return
                     }
@@ -196,7 +228,6 @@ Item {
                         if (pressed) {
                             miusSlider.value += (mouseX - miusSlider.ox) / miusSlider.width * (miusSlider.to - miusSlider.from)
                         }
-                        console.log(nowReal)
                         nowReal = miusSlider.value / (miusSlider.to - miusSlider.from) * endReal
                     }
 
@@ -213,7 +244,6 @@ Item {
             y: 0
             value: .5
             onValueChanged: function () {
-                console.log(value)
                 miusPlayer.volume = value
             }
 

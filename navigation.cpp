@@ -8,6 +8,8 @@
 Navigation::Navigation(QWidget *p){
     root=p;
     main=0;
+    list=0;
+    recommend=0;
 
     player=new QQuickWidget(root);
     player->setSource(QUrl("qrc:/qml/mediaplayer.qml"));
@@ -15,9 +17,8 @@ Navigation::Navigation(QWidget *p){
     player->resize(1024,48);
     player->show();
     mainplayer=new MainPlayer(this,player);
-    QObject::connect((QQuickItem *)(player->rootObject()),SIGNAL(listBtnClickSignal()),this,SLOT(listBtnClickSlot()));
-    QObject::connect((QQuickItem *)(player->rootObject()),SIGNAL(prevBtnClickSignal()),this,SLOT(prevBtnClickSlot()));
-    QObject::connect((QQuickItem *)(player->rootObject()),SIGNAL(nextBtnClickSignal()),this,SLOT(nextBtnClickSlot()));
+    QObject::connect((QQuickItem *)(player->rootObject()),SIGNAL(listBtnClickSignal()),this,SLOT(playlistSwitchClickSlot()));
+    QObject::connect((QQuickItem *)(player->rootObject()),SIGNAL(nowIdSignal(QVariant)),this,SLOT(nowIdSlot(QVariant)));
 
     smBox=new QQuickWidget(root);
     smBox->setSource(QUrl("qrc:/qml/smallbox.qml"));
@@ -28,8 +29,11 @@ Navigation::Navigation(QWidget *p){
     poplist=0;
 
     this->rarium = new LiteStorage;
-    mainplayer->playlist=rarium->getListIds();
-    updateRB();
+    mainplayer->playlist=rarium->getListIds(); // 读取数据库数据
+    QVariant arg;
+    arg.setValue(mainplayer->playlist);
+    QMetaObject::invokeMethod(player->rootObject(),"freshList",Q_ARG(QVariant,arg)); // 刷新QML playlist
+    updateRB(); // 更新right bottom number
 }
 
 Navigation::~Navigation(){
@@ -49,8 +53,6 @@ void Navigation::freshen(){
     main->move(210,60);
     main->resize(1024-200,670-50-49);
     main->show();
-    // recommend=0;
-    // list=0;
 }
 
 void Navigation::toRecommend(){
@@ -59,7 +61,7 @@ void Navigation::toRecommend(){
     recommend=main->rootObject();
     QObject::connect(recommend,SIGNAL(playlistClickSignal(QVariant)),this,SLOT(playlistClickSlot(QVariant)));
     NetRecommend *k=new NetRecommend([&](QVariant res){
-        qDebug()<<"call me"<<endl;
+        qDebug()<<"这是魔法的输出"<<endl;
         QVariant retValue;
         QMetaObject::invokeMethod(recommend,"createItems",Qt::DirectConnection,Q_RETURN_ARG(QVariant, retValue),Q_ARG(QVariant,res));
         delete k;
@@ -86,7 +88,6 @@ void Navigation::closePopList(){
 }
 
 void Navigation::toList(QString id){
-    qDebug()<<id<<endl;
     this->freshen();
     main->setSource(QUrl("qrc:/qml/list.qml"));
     list=main->rootObject();
@@ -107,28 +108,25 @@ void Navigation::updateRB(){
 void Navigation::updateLB(QString id){
     if(id=="nonenone")return;
     NetSongDetails *k=new NetSongDetails(id,[&](QVariant res){
-        qDebug()<<res<<endl;
         QMetaObject::invokeMethod(smBox->rootObject(),"freshen",Qt::DirectConnection,Q_ARG(QVariant,res));
     });
 }
 void Navigation::playlistClickSlot(QVariant id){
-    qDebug()<<id<<endl;
     this->toList(id.toString());
 }
 
 void Navigation::songClickSlot(QVariant id){
-    qDebug()<<id<<endl;
-    rarium->addSid(id.toString());
+    rarium->addSid(id.toString()); // 存储到 playlist id 数据表
     mainplayer->newPlay(id.toString());
-    mainplayer->toBack(); // 最后的item是最新添加的
     updateRB();
     updateLB(id.toString());
+    if(poplist)QMetaObject::invokeMethod(poplist->rootObject(),"createList",Qt::DirectConnection,Q_ARG(QVariant,rarium->getList())); // auto downcast
+
 }
 
 void Navigation::listClickSlot(QVariant listIds){
-    QStringList lists=listIds.toStringList();
+    QStringList lists=listIds.toStringList(); // add to playlist ids 数据库
     for(int i=0;i<lists.size();i++){
-        qDebug()<<lists[i]<<endl;
         mainplayer->addToList(lists[i]);
         // rarium->addSid(lists[i]); //效率低下，应该使用事务
     }
@@ -136,30 +134,27 @@ void Navigation::listClickSlot(QVariant listIds){
     updateRB();
 }
 
-void Navigation::listBtnClickSlot(){
+void Navigation::playlistSwitchClickSlot(){
     static bool listBtnState=true;
     if(listBtnState){
-        qDebug()<<"show"<<endl;
         this->openPopList();
     }else{
-        qDebug()<<"close"<<endl;
         this->closePopList();
     }
     listBtnState=!listBtnState;
 }
 
-void Navigation::prevBtnClickSlot(){
-    mainplayer->prev();
-    updateLB(mainplayer->nowsStr());
-}
-
-void Navigation::nextBtnClickSlot(){
-    mainplayer->next();
-    updateLB(mainplayer->nowsStr());
-}
 void Navigation::clearListSlot() {
     rarium->clearSids();
     QMetaObject::invokeMethod(poplist->rootObject(),"clear",Qt::DirectConnection);
+    QMetaObject::invokeMethod(player->rootObject(),"clear",Qt::DirectConnection);
     mainplayer->playlist.clear();
     updateRB();
+}
+void Navigation::nowIdSlot(QVariant sid){
+    qDebug()<<sid.toString()<<endl;
+    QRegExp rx("id=\\d+(?=.mp3)");
+    qDebug()<<sid.toString().indexOf(rx);
+    QString quid=rx.capturedTexts()[0];
+    updateLB(quid.split("=")[1]);
 }

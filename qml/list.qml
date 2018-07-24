@@ -389,7 +389,6 @@ Item {
         }
     }
     function nextTick (res) {
-        console.log(res)
         bPicUrl = res.playlist.coverImgUrl
         bTitleStr = res.playlist.name
         creatorImgUrl = res.playlist.creator.avatarUrl

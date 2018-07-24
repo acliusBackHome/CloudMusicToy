@@ -101,7 +101,6 @@ Rectangle {
         console.log("init")
         items = items["result"]
         for (var i in items) {
-            console.log(items[i]["name"])
             data.append({content: items[i]["name"],
                          picUrl: items[i]["picUrl"],
                          id: items[i]["id"]
