@@ -65,6 +65,7 @@ Item {
                 nowIdSignal(miusList.currentItemSource)
                 miusPlayer.stop()
                 miusPlayer.source = miusList.currentItemSource
+                miusPlayer.play()
             }
             // console.log(position,duration)
         }
