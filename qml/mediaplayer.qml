@@ -1,7 +1,6 @@
 import QtQuick 2.0
 import QtMultimedia 5.9
 import QtQuick.Controls 2.2
-import "./"
 // import QtAV 1.6
 Item {
     width: 1024
@@ -40,14 +39,13 @@ Item {
     function clear () {
         miusList.clear()
     }
-
+    Playlist {
+        id: miusList
+        playbackMode: Playlist.Loop
+    }
     MediaPlayer {
         id: miusPlayer
         source: ""
-        playlist: Playlist {
-            id: miusList
-            playbackMode: Playlist.Loop
-        }
         onSourceChanged: function () {
             console.log("change")
         }
@@ -65,6 +63,8 @@ Item {
                 miusList.next()
                 nowReal = 0
                 nowIdSignal(miusList.currentItemSource)
+                miusPlayer.stop()
+                miusPlayer.source = miusList.currentItemSource
             }
             // console.log(position,duration)
         }
@@ -76,7 +76,8 @@ Item {
         sid = sid.toString()
         const url = baseUrl + sid + tailUrl
         console.log(url)
-        miusList.addItem(url)
+        // miusList.addItem(url)
+        miusPlayer.source = url
         miusPlayer.play()
         isStart = true
     }
@@ -96,6 +97,9 @@ Item {
                 onClicked: function () {
                     miusList.previous()
                     nowIdSignal(miusList.currentItemSource)
+                    miusPlayer.stop()
+                    miusPlayer.source = miusList.currentItemSource
+                    miusPlayer.play()
                 }
             }
         }
@@ -111,6 +115,9 @@ Item {
                 onClicked: function () {
                     miusList.next()
                     nowIdSignal(miusList.currentItemSource)
+                    miusPlayer.stop()
+                    miusPlayer.source = miusList.currentItemSource
+                    miusPlayer.play()
                 }
             }
         }
@@ -227,6 +234,7 @@ Item {
                     onPositionChanged: function () {
                         if (pressed) {
                             miusSlider.value += (mouseX - miusSlider.ox) / miusSlider.width * (miusSlider.to - miusSlider.from)
+                            miusPlayer.seek(miusSlider.value * miusPlayer.duration)
                         }
                         nowReal = miusSlider.value / (miusSlider.to - miusSlider.from) * endReal
                     }
